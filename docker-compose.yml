@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  # Tu MySQL de siempre
+  mysql-server:
+    image: mysql:8.0
+    container_name: mysql_db
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: netflix_db
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./mysql_data:/var/lib/mysql
+
+  # Tu MongoDB de siempre
+  mongo-server:
+    image: mongo:latest
+    container_name: mongo_db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: admin_password
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./mongo_data:/data/db
+
+  # Interfaz para MySQL (phpMyAdmin)
+  mysql-visual:
+    image: phpmyadmin:latest
+    container_name: mysql_visual
+    restart: always
+    environment:
+      PMA_HOST: mysql-server
+      MYSQL_ROOT_PASSWORD: root_password
+    ports:
+      - "8080:80"
+
+  # Interfaz para MongoDB (Mongo Express)
+  mongo-visual:
+    image: mongo-express:latest
+    container_name: mongo_visual
+    restart: always
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: admin
+      ME_CONFIG_MONGODB_ADMINPASSWORD: admin_password
+      ME_CONFIG_MONGODB_URL: mongodb://admin:admin_password@mongo-server:27017/?authSource=admin
+    ports:
+      - "8081:8081"
+
